@@ -1,0 +1,271 @@
+    :root {
+      --wall-color: #001524;
+      --center-line: #ff7d00;
+      --background: #fff2e0;
+      --cursor: #15616d;
+      --collision: #78290f;
+      --text: #001524;
+      --text-light: #ffecd1;
+      --button: #15616d;
+      --button-hover: #001524;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background);
+      height: 100%;
+      color: var(--text);
+    }
+
+    #container {
+      max-width: 1000px;
+      max-height: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--background);
+    }
+
+    #frontPage {
+      width: 100%;
+      max-width: 600px;
+      background: #ffecd1;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      margin-top: 30px;
+    }
+    
+
+    #experimentPage {
+      width: 100%;
+      max-width: 900px;
+      background: #ffecd1;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      margin-top: 30px;
+    
+    }
+
+    h2 {
+      color: var(--wall-color);
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #fff2e0;
+      background: #fff2e0;
+    }
+
+    /* Make the name label container exactly 600px wide */
+    #spatForm > label:first-child {
+    width: 600px;
+    display: block;
+    margin-bottom: 12px;
+    }
+
+    /* Make the name input fill its 600px container */
+    #name {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff2e0;
+    box-sizing: border-box; /* ← THIS IS THE KEY */
+    }
+
+    /* Keep other inputs at 100% */
+    input[type="number"],
+    select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #fff2e0;
+    background: #fff2e0;
+    box-sizing: border-box;
+}
+
+    .sequence-group, .deduction-type-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 8px;
+    }
+
+    .sequence-group label, .deduction-type-group label {
+      font-weight: normal;
+      margin-top: 0;
+    }
+
+    button {
+      width: 100%;
+      background: var(--button);
+      color: var(--text-light);
+      font-size: 1.1rem;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      margin: 20px auto 0;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: block;
+    }
+    .deduction-type-group input[type="radio"] {
+    accent-color: var(--button);  /* Uses your existing --button color */
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    }
+
+    .deduction-type-group label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+      transform: translateY(-2px);
+    }
+
+    #experimentTopBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      width: 800px;
+      color: var(--text);
+    }
+
+    #spatCanvas, #previewCanvas {
+      border: 2px solid var(--center-line);
+      background: var(--background);
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin: 12px auto;
+    }
+
+    #trialMsg {
+      text-align: center;
+      color: var(--cursor);
+      font-weight: bold;
+      margin-bottom: 10px;
+      min-height: 1.5em;
+    }
+
+    #finalPlot {
+      width: 400px;
+      height: 320px;
+      margin: 18px auto 0;
+    }
+
+    #previewLabel {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    #summaryBox {
+      color: var(--cursor);
+      font-weight: bold;
+      margin: 20px auto 0;
+      text-align: center;
+    }
+
+    #restartBtn {
+      display: none;
+      margin: 20px auto 0;
+      width: 140px;
+      font-size: 1.1em;
+    }
+
+    #resumeOverlay {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.85);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #countdownOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      color: var(--text-light);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #countdownTitle {
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    #countdownText {
+      font-size: 48px;
+      margin: 20px;
+    }
+
+    /* Hide all form elements except name, input device, and start button */
+    #spatForm > label:not(:nth-child(1), :nth-child(2), :nth-child(3)) {
+    display: none;
+    }
+
+    /* Explicitly hide deduction type group and preview elements */
+    #spatForm > .deduction-type-group,
+    #spatForm > #previewLabel,
+    #spatForm > #previewCanvas {
+    display: none !important;
+    }
+
+    /* Styles BOTH sequence and deduction radio buttons */
+    .sequence-group input[type="radio"] {
+    accent-color: var(--button);  /* Teal color (#15616d) */
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    }
+
+    /* Hide resume overlay when countdown overlay is visible */
+    #countdownOverlay[style*="display: flex"] ~ #resumeOverlay {
+      display: none !important;
+    }
