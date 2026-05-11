@@ -41,10 +41,10 @@ const BLOCK_COUNTDOWN_S = 5;    // seconds shown between blocks
 
 // Each block: { numTrials, rotation (° added to cursor input), lag (ms) }
 const BLOCKS_A = [
-  { numTrials: 60, rotation: 0, lag: 0 },
-  { numTrials: 80, rotation: 30, lag: 0 },
-  { numTrials: 80, rotation: 30, lag: 500 },
-  { numTrials: 60, rotation: 0, lag: 0 },
+  { numTrials: 1, rotation: 0, lag: 0 },
+  { numTrials: 1, rotation: 30, lag: 0 },
+  { numTrials: 1, rotation: 30, lag: 500 },
+  { numTrials: 1, rotation: 0, lag: 0 },
 ];
 
 const BLOCKS_B = [
@@ -887,7 +887,7 @@ function endExperiment() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(shRows), "ShapeData");
 
   const ts = new Date().toISOString().replace(/[-T:.Z]/g, '');
-  const fn = `SPAT_${user.name || 'anon'}_rot${user.rotation}_lag${user.lag}_${ts}.xlsx`;
+  const fn = `SPAT_${user.name || 'anon'}_sequence_${currentSequence}_${ts}.xlsx`;
   if (document.pointerLockElement) {
     document.exitPointerLock();
     setTimeout(() => { XLSX.writeFile(wb, fn); restartBtn.style.display = "block"; }, 200);
