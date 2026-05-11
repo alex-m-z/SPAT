@@ -41,10 +41,10 @@ const BLOCK_COUNTDOWN_S = 5;    // seconds shown between blocks
 
 // Each block: { numTrials, rotation (° added to cursor input), lag (ms) }
 const BLOCKS_A = [
-  { numTrials: 1, rotation: 0, lag: 0 },
-  { numTrials: 1, rotation: 30, lag: 0 },
-  { numTrials: 1, rotation: 30, lag: 500 },
-  { numTrials: 1, rotation: 0, lag: 0 },
+  { numTrials: 60, rotation: 0, lag: 0 },
+  { numTrials: 80, rotation: 30, lag: 0 },
+  { numTrials: 80, rotation: 30, lag: 500 },
+  { numTrials: 60, rotation: 0, lag: 0 },
 ];
 
 const BLOCKS_B = [
