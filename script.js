@@ -48,10 +48,10 @@ const BLOCKS_A = [
 ];
 
 const BLOCKS_B = [
-  { numTrials: 60, rotation:  0, lag:   0 },
-  { numTrials: 80, rotation: 0, lag: 500 },
-  { numTrials: 80, rotation:  30, lag: 500 },
-  { numTrials: 60, rotation:  0, lag: 0 },
+  { numTrials: 30, rotation:  0, lag:   0 },
+  { numTrials: 40, rotation: 0, lag: 500 },
+  { numTrials: 40, rotation:  30, lag: 500 },
+  { numTrials: 30, rotation:  0, lag: 0 },
 ];
 
 let BLOCKS = BLOCKS_A;
