@@ -41,10 +41,10 @@ const BLOCK_COUNTDOWN_S = 5;    // seconds shown between blocks
 
 // Each block: { numTrials, rotation (° added to cursor input), lag (ms) }
 const BLOCKS_A = [
-  { numTrials: 60, rotation: 0, lag: 0 },
-  { numTrials: 80, rotation: 30, lag: 0 },
-  { numTrials: 80, rotation: 30, lag: 500 },
-  { numTrials: 60, rotation: 0, lag: 0 },
+  { numTrials: 30, rotation: 0, lag: 0 },
+  { numTrials: 40, rotation: 30, lag: 0 },
+  { numTrials: 40, rotation: 30, lag: 500 },
+  { numTrials: 30, rotation: 0, lag: 0 },
 ];
 
 const BLOCKS_B = [
@@ -259,7 +259,7 @@ window.onload = function () {
     const dx=midPoints[targetIdx].x-midPoints[startIdx].x;
     const dy=midPoints[targetIdx].y-midPoints[startIdx].y;
     const len=Math.hypot(dx,dy), px=-dy/len, py=dx/len;
-    const extra=15;
+    const extra=10;
     wallLine={
       x1:midx+px*(width/2+extra), y1:midy+py*(width/2+extra),
       x2:midx-px*(width/2+extra), y2:midy-py*(width/2+extra)
