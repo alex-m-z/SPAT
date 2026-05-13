@@ -927,6 +927,7 @@ function endExperiment() {
     currentBlockIdx=0; trialWithinBlock=0;
     if(USE_BLOCKS&&BLOCKS.length>0){
       totalTrials=BLOCKS.reduce((s,b)=>s+b.numTrials,0);
+      console.log(totalTrials);
       applyBlockSettings(BLOCKS[0]);          // prime rotation & lag from block 1
     } else {
       totalTrials   =user.trialNum;
