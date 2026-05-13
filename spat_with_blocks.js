@@ -500,7 +500,7 @@ window.onload = function() {
         const interpPos = interpolatePositionForSection(oldX, oldY, newX, newY, section);
         const distance = getPerpendicularDistance(interpPos.x, interpPos.y);
         console.log('distance', distance);
-        const penalty = 0.0005 * distance * distance;
+        const penalty = 0.001 * distance * distance;
         console.log('penalty', penalty);
         score = Math.max(0, score - penalty);
         scoreDisplay.textContent = `Score: ${score.toFixed(2)}`;
@@ -659,8 +659,8 @@ window.onload = function() {
       if (!drawing) return;
       let now = performance.now();
       let dt = (now - lastTick) / 1000; lastTick = now;
-      score -= deductTime * dt;
-      score = Math.max(0, score);
+      score -= deductTime * dt * 20;
+      score = Math.max(0, score) ;
       scoreDisplay.textContent = `Score: ${score.toFixed(2)}`;
       if (score <= 0 && !reachedTarget) { stopDrawingAndAdvance(); }
     }, 20);
