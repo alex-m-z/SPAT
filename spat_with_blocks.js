@@ -270,10 +270,10 @@ window.onload = function() {
     let shape = generateAmoebaShape(999, widthP, actualNoiseMagP, noiseFreq, pathLengthP, nSegmentsP, 170, 170);
     previewCtx.clearRect(0,0,340,340);
     previewCtx.save();
-    previewCtx.strokeStyle = "#555";
+    previewCtx.strokeStyle = "#fff2e0";
     previewCtx.lineWidth = 2.2;
     drawSmoothClosedCurve(previewCtx, resampleOutline(shape.outlineOuter, 360));
-    previewCtx.strokeStyle = "#aaa";
+    previewCtx.strokeStyle = "#fff2e0";
     previewCtx.lineWidth = 2.2;
     drawSmoothClosedCurve(previewCtx, resampleOutline(shape.outlineInner, 360));
     previewCtx.strokeStyle = "#ff8686";
@@ -546,10 +546,10 @@ window.onload = function() {
     canvas.style.cursor = (inputDevice === 'mouse') ? 'none' : 'default';
 
     ctx.save();
-    ctx.strokeStyle = "#555";
+    ctx.strokeStyle = "#f5e3c8";
     ctx.lineWidth = 3;
     drawSmoothClosedCurve(ctx, outlineOuter);
-    ctx.strokeStyle = "#aaa";
+    ctx.strokeStyle = "#f5e3c8";
     ctx.lineWidth = 3;
     drawSmoothClosedCurve(ctx, outlineInner);
     ctx.restore();
