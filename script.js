@@ -65,7 +65,7 @@ window.onload = function () {
   let inputDevice = "mouse";          // mouse | xbox | extreme3dpro
   let trial = 1, totalTrials = 5;
   let score = 100, defaultScore = 100;
-  let width = 40, noiseMag = 0.15, pathLength = 1000, nSegments = 30;
+  let width = 20, noiseMag = 0.15, pathLength = 1000, nSegments = 30;
   let deductError = 1, deductTime = 0.01;
   let rotationAngle = 0;              // degrees (cursor rotation)
   let lagMs = 0;
