@@ -54,7 +54,7 @@ const BLOCKS_B = [
   { numTrials: 30, rotation:  0, lag: 0 },
 ];
 
-let BLOCKS = BLOCKS_A;
+let BLOCKS;
 
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -142,7 +142,10 @@ window.onload = function() {
     sequenceBtnA.addEventListener('change', function() {
       if (this.checked) {
         BLOCKS = BLOCKS_A;
+        currentSequence = BLOCKS;
         console.log('Switched to Sequence A');
+        console.log('currentSequence', currentSequence)
+
       }
     });
   }
@@ -151,13 +154,13 @@ window.onload = function() {
     sequenceBtnB.addEventListener('change', function() {
       if (this.checked) {
         BLOCKS = BLOCKS_B;
+        currentSequence = BLOCKS;
         console.log('Switched to Sequence B');
+        console.log('currentSequence', currentSequence)
+
       }
     });
   }
- 
-  // Initialize with Sequence A (default)
-  BLOCKS = BLOCKS_A;
 
   // ===================== Utilities =====================
   function seededRandom(seed) {
