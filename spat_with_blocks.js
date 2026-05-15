@@ -778,12 +778,6 @@ window.onload = function() {
       setTimeout(() => { advanceTrialOrEnd(); }, 700);
       return;
     }
-
-    if (score <= 0 && !reachedTarget) {
-      endDrawingIfNeeded(sourceTag);
-      movementBuffer = [];
-      setTimeout(() => { advanceTrialOrEnd(); }, 700);
-    }
   }
 
   function stopDrawingAndAdvance(){
