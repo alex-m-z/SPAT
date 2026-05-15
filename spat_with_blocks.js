@@ -779,6 +779,7 @@ window.onload = function() {
       return;
     }
   }
+  
 
   function stopDrawingAndAdvance(){
     endDrawingIfNeeded('timer');
