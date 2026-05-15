@@ -54,7 +54,7 @@ const BLOCKS_B = [
   { numTrials: 30, rotation:  0, lag: 0 },
 ];
 
-let BLOCKS;
+let BLOCKS= BLOCKS_A;
 
 // ══════════════════════════════════════════════════════════════════════════════
 
