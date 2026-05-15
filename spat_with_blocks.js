@@ -665,7 +665,6 @@ window.onload = function() {
       score -= deductTime * dt * 20;
       score = Math.max(0, score) ;
       scoreDisplay.textContent = `Score: ${score.toFixed(2)}`;
-      if (score <= 0 && !reachedTarget) { stopDrawingAndAdvance(); }
     }, 20);
   }
   function stopDeductTimer(){ if (deductTimer) clearInterval(deductTimer); deductTimer = null; }
