@@ -549,10 +549,10 @@ window.onload = function() {
     canvas.style.cursor = (inputDevice === 'mouse') ? 'none' : 'default';
 
     ctx.save();
-    ctx.strokeStyle = "#f5e3c8";
+    ctx.strokeStyle = "#fff2e0";
     ctx.lineWidth = 3;
     drawSmoothClosedCurve(ctx, outlineOuter);
-    ctx.strokeStyle = "#f5e3c8";
+    ctx.strokeStyle = "#fff2e0";
     ctx.lineWidth = 3;
     drawSmoothClosedCurve(ctx, outlineInner);
     ctx.restore();
