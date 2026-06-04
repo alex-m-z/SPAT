@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SPAT Task – Mouse + Extreme 3D Pro</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="container">
+  <div id="frontPage">
+    <h2>SPAT Task</h2>
+    <div id="instructionBox">
+      <h3>Instructions</h3>
+      <p>
+        Thank you for participating to the SPAT experiment <br>
+        The goal of the experiment is to trace the read line as accurately as possible with your cursor <br>
+        The scoring method is based on the time spent drawing and the accuracy of the drawing<br>
+        After each trial, your score will appear, to give you an idea of how well you performed <br>
+        The experiment is composed of 4 blocks, and you will have 1 minute to rest between each block <br>
+        Best of luck <br> 
+        Alex and Leah
+      </p>
+      <h3>実験の手順</h3>
+      <p>
+        SPAT実験 ご参加いただき、ありがとうございます。<br>
+        この実験の目的は、カーソルを使って表示された線をできるだけ正確になぞることです <br>
+        採点方法は、描画にかかった時間と描画の正確さに基づいています <br>
+        各試行終了後、スコアが表示されますので、ご自身のパフォーマンスを確認してください <br>
+        実験は4つのブロックで構成されており、各ブロックの間には1分間の休憩があります <br>
+        頑張ってください <br> 
+        アレックスとリア
+      </p>
+    </div>
+    <form id="spatForm">
+      <label>Name / 名前:
+        <input type="text" id="name" required>
+      </label>
+      <label>Input device:
+        <select id="inputDevice">
+          <option value="mouse" selected>Computer mouse</option>
+          <option value="xbox">Xbox controller</option>
+          <option value="extreme3dpro">Logitech Extreme 3D Pro (Joystick)</option>
+          <option value="wacom">Wacom tablet</option>
+        </select>
+      </label>
+      <label>Sequence:
+        <div class="sequence-group">
+          <label><input id="sequenceBtnA" type="radio" name="sequence" value="A" checked> Sequence A</label>
+          <label><input id="sequenceBtnB" type="radio" name="sequence" value="B"> Sequence B</label>
+        </div>
+      </label>
+      <label>Rotation (degree):
+        <input type="number" id="rotation" value="0">
+      </label>
+      <label>Time lag (msec):
+        <input type="number" id="lag" value="0">
+      </label>
+      <label>Trial number:
+        <input type="number" id="trialNum" min="1" value="5">
+      </label>
+      <label>Deduction type:</label>
+      <div class="deduction-type-group">
+        <label><input type="radio" name="deductType" value="time" checked> By time (default)</label>
+        <label><input type="radio" name="deductType" value="movement"> By movement</label>
+      </div>
+      <label>Score (points):
+        <input type="number" id="score" min="1" value="100">
+      </label>
+      <label>Deduct (error):
+        <input type="number" id="deductError" min="0" >
+      </label>
+      <label>Deduct (time/movement):
+        <input type="number" id="deductTime" min="0" step="0.0001" >
+      </label>
+      <label>Width (points):
+        <input type="number" id="width" min="5" max="60" value="32">
+      </label>
+      <label>Bump depth (as fraction of base radius):
+        <input type="number" id="noiseMag" min="0" max="1" step="0.01" value="0.15">
+      </label>
+      <label>Path length:
+        <input type="number" id="pathLength" min="100" max="3000" value="1000">
+      </label>
+      <label>Number of segments:
+        <input type="number" id="nSegments" min="20" max="300" value="30">
+      </label>
+      <div id="previewLabel">Amoeba Shape Preview:</div>
+      <canvas id="previewCanvas" width="340" height="340"></canvas>
+      <button type="button" id="fullscreenBtn" class="btn">Go Fullscreen / 全画面表示にする</button>
+      <button type="submit" id="startBtn">Start experiment / 実験を開始する</button>
+    </form>
+  </div>
+
+  <div id="experimentPage" style="display:none;">
+    <div id="experimentTopBar">
+      <span id="trialProgress">Trial 1 of 5</span>
+      <span id="scoreDisplay">Score: 100</span>
+    </div>
+    <canvas id="spatCanvas" width="540" height="540"></canvas>
+    <div id="trialMsg"></div>
+    <div id="summaryBox"></div>
+    <div id="blockResults"></div>
+    <button id="restartBtn">Restart</button>
+    <div id="resumeOverlay">
+      <div style="font-size:1.3em;color:var(--wall-color);margin-bottom:20px;">Pointer lock lost.<br>Click Resume to continue.</div>
+      <button id="resumeBtn" style="font-size:1.2em;padding:16px 50px 16px 50px;">Resume <br> 再開</button>
+    </div>
+  </div>
+
+  <div id="trialEndOverlay" class="trial-end-overlay">
+    <div class="trial-end-content">
+      <div class="trial-score-label">Trial Score  <br> トライアルスコア</div>
+      <div class="trial-score-value" id="trialScoreValue">0.00</div>
+      <div class="trial-score-message">Proceeding to next trial... <br> 次の裁判に進みます…</div>
+      <div id="graph"></div>
+    </div>
+  </div>
+
+  <div id="countdownOverlay">
+    <h1 id="countdownTitle">End of block <br> ブロックの終わり</h1>
+    <div id="countdownText">5</div>
+    <p>Get ready for the next block... <br> 次のブロックの準備を…</p>
+    <div id="finalPlot"></div>
+  </div>
+
+  
+  </div>
+
+<script src="script_corrected.js"></script>
+</body>
+</html>
