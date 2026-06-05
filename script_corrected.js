@@ -753,8 +753,15 @@ window.onload = function() {
       if (e.pointerType !== 'pen') return;
       if (!trialStarted) { startTrialTimer(); trialStarted = true; }
 
-      try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
       activePenterId = e.pointerId;
+
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch(err) {
+        console.warn('setPointerCapture failed:', err);
+        // On continue quand même — le fallback lastPenPos prendra le relais
+      }
+
       tabletActive = true;
       beginDrawingIfNeeded('tablet');
 
@@ -762,49 +769,49 @@ window.onload = function() {
         penPos = { x: outlineMiddle[startIdx].x, y: outlineMiddle[startIdx].y };
         drawnPath = [{ x: penPos.x, y: penPos.y }];
       }
-      lastPenPos = { x: e.clientX, y: e.clientY };
+      lastPenPos = { x: e.clientX, y: e.clientY };  // toujours initialisé ici
       drawAmoeba();
     });
 
     canvas.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'pen') return;
-      if (!trialStarted || !tabletActive || !drawing) return;
-      if (e.pointerId !== activePenterId) return;  // ignore stray pointers
+  if (e.pointerType !== 'pen') return;
+  if (!trialStarted || !tabletActive || !drawing) return;
+  if (e.pointerId !== activePenterId) return;
 
-      let now = performance.now();
-      if (!lastPenPos) {
-        lastPenPos = { x: e.clientX, y: e.clientY };
-        return;
+  let now = performance.now();
+  const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+
+  for (const ce of events) {
+    if (!lastPenPos) {
+      lastPenPos = { x: ce.clientX, y: ce.clientY };
+      // PAS de return/continue ici — on initialise et on continue
+    }
+    const dx = ce.clientX - lastPenPos.x;
+    const dy = ce.clientY - lastPenPos.y;
+    lastPenPos = { x: ce.clientX, y: ce.clientY };
+
+    if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) continue; // ignorer micro-bruit
+
+    if (lagMs > 0) {
+      movementBuffer.push({ dx, dy, time: now });
+      while (movementBuffer.length && movementBuffer[0].time < now - lagMs - 2000)
+        movementBuffer.shift();
+      while (movementBuffer.length && movementBuffer[0].time <= now - lagMs) {
+        let mv = movementBuffer.shift();
+        processOneDelta(mv.dx, mv.dy, now, 'pen');
       }
+    } else {
+      processOneDelta(dx, dy, now, 'pen');
+    }
+  }
 
-      // Use getCoalescedEvents if available for smoother high-rate tablets
-      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-
-      for (const ce of events) {
-        let dx = ce.clientX - lastPenPos.x;
-        let dy = ce.clientY - lastPenPos.y;
-        lastPenPos = { x: ce.clientX, y: ce.clientY };
-
-        if (lagMs > 0) {
-          movementBuffer.push({ dx, dy, time: now });
-          while (movementBuffer.length && movementBuffer[0].time < now - lagMs - 2000)
-            movementBuffer.shift();
-          while (movementBuffer.length && movementBuffer[0].time <= now - lagMs) {
-            let mv = movementBuffer.shift();
-            processOneDelta(mv.dx, mv.dy, now, 'pen');
-          }
-        } else {
-          processOneDelta(dx, dy, now, 'pen');
-        }
-      }
-
-      if (reachedTarget) {
-        tabletActive = false;
-        activePenterId = null;
-        lastPenPos = null;
-        try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
-      }
-    });
+  if (reachedTarget) {
+    tabletActive = false;
+    activePenterId = null;
+    lastPenPos = null;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+  }
+});
 
     canvas.addEventListener('pointerup', (e) => {
       if (e.pointerType !== 'pen') return;
@@ -819,15 +826,6 @@ window.onload = function() {
     // *** KEY FIX: don't kill tabletActive on pointerleave ***
     // Pointer capture means pointermove still fires even outside the canvas,
     // so pointerleave firing mid-stroke was incorrectly stopping drawing.
-    canvas.addEventListener('pointerleave', (e) => {
-      if (e.pointerType !== 'pen') return;
-      // Only stop if we don't have an active capture
-      if (activePenterId === null) {
-        tabletActive = false;
-        lastPenPos = null;
-        drawAmoeba();
-      }
-    });
   }
 
   function gamepadLoop(){
