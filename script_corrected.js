@@ -39,17 +39,19 @@ const BLOCK_COUNTDOWN_S = 60;    // seconds shown between blocks
 // Each block: { numTrials, rotation (° added to cursor input), lag (ms) }
 const BLOCKS_A = [
   { minTrials: 20, maxTrials: 20, rotation:  0, lag:   0 },
-  { minTrials: 40, maxTrials: 40, rotation: 30, lag:   0 }
+  { minTrials: 40, maxTrials: 40, rotation: 30, lag:   0 },
+  { minTrials: 40, maxTrials: 40, rotation: 30, lag: 250 },
+  { minTrials: 30, maxTrials: 30, rotation:  0, lag:   0 },
 ];
-
-//{ minTrials: 30, maxTrials: 40, rotation: 30, lag: 250 },{ minTrials: 20, maxTrials: 30, rotation:  0, lag:   0 },
 
 const BLOCKS_B = [
   { minTrials: 20, maxTrials: 20, rotation:  0, lag:   0 },
   { minTrials: 40, maxTrials: 40, rotation:  0, lag: 250 },
+  { minTrials: 40, maxTrials: 40, rotation: 30, lag: 250 }, 
+  { minTrials: 30, maxTrials: 30, rotation:  0, lag:   0 },
 ];
 
-//{ minTrials: 30, maxTrials: 40, rotation: 30, lag: 250 }, { minTrials: 20, maxTrials: 30, rotation:  0, lag:   0 },
+//
 
 let BLOCKS = BLOCKS_A;
 
