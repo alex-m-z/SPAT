@@ -1152,7 +1152,7 @@ window.onload = function() {
         drawing = false; mouseIsDown = false; tabletActive = false;
         endDrawingIfNeeded('forced_skip');      
         scoreDisplay.textContent = `Score: ${score.toFixed(2)}`;
-        scoreDisplay.style.display = 'block';
+        scoreDisplay.style.display = 'none';
         trialMsg.textContent = 'Press N again for next trial';
         
         if (blockTrialScores.length > 0) displayBlockResultsGraph();
