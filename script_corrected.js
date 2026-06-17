@@ -140,6 +140,7 @@ window.onload = function() {
   const blockResultsDiv = document.getElementById('blockResults');
   const summaryBox = document.getElementById('summaryBox');
   const restartBtn = document.getElementById('restartBtn');
+  const expermentEndOverlay = document.getElementById('experimentEndOverlay');
   const resumeOverlay = document.getElementById('resumeOverlay');
   const resumeBtn = document.getElementById('resumeBtn');
   const sequenceSelectionDiv = document.getElementById('sequenceSelection');
@@ -1009,9 +1010,9 @@ window.onload = function() {
     let filename = `SPAT_${user.name || 'anon'}_sequence_${currentSequence}_${new Date().toISOString().replace(/[-T:.Z]/g,'')}.xlsx`;
     if (document.pointerLockElement) {
       document.exitPointerLock();
-      setTimeout(()=>{ XLSX.writeFile(wb, filename); restartBtn.style.display = "block"; }, 200);
+      setTimeout(()=>{ XLSX.writeFile(wb, filename); restartBtn.style.display = "block"; experimentEndOverlay.style.display = "block";}, 200);
     } else {
-      XLSX.writeFile(wb, filename); restartBtn.style.display = "block";
+      XLSX.writeFile(wb, filename); restartBtn.style.display = "block"; experimentEndOverlay.style.display = "block";
     }
   }
 
@@ -1053,7 +1054,7 @@ window.onload = function() {
     scoreDisplay.style.display = 'none';
     scoreDisplay.textContent = 'Score: ' + score;
     finalPlotDiv.innerHTML = ''; blockResultsDiv.innerHTML = ''; summaryBox.innerHTML = '';
-    restartBtn.style.display = "none"; resumeOverlay.style.display = "none";
+    restartBtn.style.display = "none"; experimentEndOverlay.style.display = "none"; resumeOverlay.style.display = "none";
 
     canvas = document.getElementById('spatCanvas');
     ctx = canvas.getContext('2d');
@@ -1085,7 +1086,7 @@ window.onload = function() {
     experimentPage.style.display = 'none';
     frontPage.style.display = 'block';
     summaryBox.innerHTML = ""; finalPlotDiv.innerHTML = ""; blockResultsDiv.innerHTML = "";
-    restartBtn.style.display = "none"; resumeOverlay.style.display = "none";
+    restartBtn.style.display = "none"; experimentEndOverlay.style.display = "none"; resumeOverlay.style.display = "none";
     document.body.style.cursor = 'default';
     currentBlockIdx=0; trialWithinBlock=0;
     mergedData = []; allShapeData = [];
