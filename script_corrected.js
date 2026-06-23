@@ -38,7 +38,7 @@
 
   // Each block: { numTrials, rotation (° added to cursor input), lag (ms) }
   const BLOCKS_A = [
-    { numTrials: 2, rotation:  0, lag:   0 },
+    { numTrials: 20, rotation:  0, lag:   0 },
     { numTrials: 40, rotation: 30, lag:   0 },
     { numTrials: 40, rotation: 30, lag: 250 },
     { numTrials: 30, rotation:  0, lag:   0 },
