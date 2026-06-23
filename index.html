@@ -114,7 +114,6 @@
     <div id="trialMsg"></div>
     <div id="summaryBox"></div>
     <div id="blockResults"></div>
-    <button id="restartBtn">Restart</button>
     <div id="resumeOverlay">
       <div style="font-size:1.3em;color:var(--wall-color);margin-bottom:20px;">Pointer lock lost.<br>Click Resume to continue.</div>
       <button id="resumeBtn" style="font-size:1.2em;padding:16px 50px 16px 50px;">Resume <br> 再開</button>
@@ -128,6 +127,16 @@
       <div class="trial-score-message">Proceeding to next trial... <br> 次の裁判に進みます…</div>
       <div id="graph"></div>
     </div>
+  </div>
+
+  <div id="experimentEndOverlay" class="trial-end-overlay">  
+    <div class="trial-end-content">    
+      <h2 id="experimentEndTitle">Experiment Complete <br> 実験完了</h2>
+      <p>Thank you for participating! <br> ご参加いただき、ありがとうございました！</p>
+      <p>Your data has been saved. <br> データは保存されました。</p>
+      <button id="restartBtn">Restart</button>  
+    </div>
+    
   </div>
 
   <div id="countdownOverlay">
