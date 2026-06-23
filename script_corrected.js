@@ -38,20 +38,18 @@ const BLOCK_COUNTDOWN_S = 60;    // seconds shown between blocks
 
 // Each block: { numTrials, rotation (° added to cursor input), lag (ms) }
 const BLOCKS_A = [
-  { minTrials: 20, maxTrials: 20, rotation:  0, lag:   0 },
-  { minTrials: 40, maxTrials: 40, rotation: 30, lag:   0 },
-  { minTrials: 40, maxTrials: 40, rotation: 30, lag: 250 },
-  { minTrials: 30, maxTrials: 30, rotation:  0, lag:   0 },
+  { numTrials: 20, rotation:  0, lag:   0 },
+  { numTrials: 40, rotation: 30, lag:   0 },
+  { numTrials: 40, rotation: 30, lag: 250 },
+  { numTrials: 30, rotation:  0, lag:   0 },
 ];
 
 const BLOCKS_B = [
-  { minTrials: 20, maxTrials: 20, rotation:  0, lag:   0 },
-  { minTrials: 40, maxTrials: 40, rotation:  0, lag: 250 },
-  { minTrials: 40, maxTrials: 40, rotation: 30, lag: 250 }, 
-  { minTrials: 30, maxTrials: 30, rotation:  0, lag:   0 },
+  { numTrials: 20, rotation:  0, lag:   0 },
+  { numTrials: 40, rotation:  0, lag: 250 },
+  { numTrials: 40, rotation: 30, lag: 250 },
+  { numTrials: 30, rotation:  0, lag:   0 },
 ];
-
-//
 
 let BLOCKS = BLOCKS_A;
 
@@ -92,13 +90,8 @@ window.onload = function() {
   let trialStarted = false;
   let movementBuffer = [];
 
-  // Track trial scores for block graph
   let blockTrialScores = [];
-  let blockSSMHistory = [];          // [{A, B}, …] one entry per completed trial
 
-  const SSM_STABILITY_WINDOW    = 5;     // look back over this many trials
-  const SSM_STABILITY_THRESHOLD = 0.02;  // max allowed range for A and B to call it "stable"
-  
   // Tablet/Wacom state
   let tabletActive = false;
 
@@ -140,12 +133,10 @@ window.onload = function() {
   const blockResultsDiv = document.getElementById('blockResults');
   const summaryBox = document.getElementById('summaryBox');
   const restartBtn = document.getElementById('restartBtn');
-  const expermentEndOverlay = document.getElementById('experimentEndOverlay');
   const resumeOverlay = document.getElementById('resumeOverlay');
   const resumeBtn = document.getElementById('resumeBtn');
   const sequenceSelectionDiv = document.getElementById('sequenceSelection');
-  const sequenceBtnA = document.getElementById('sequenceBtnA');
-  const sequenceBtnB = document.getElementById('sequenceBtnB');
+  const sequenceSelect = document.getElementById('sequenceSelect');
   const fullscreenBtn = document.getElementById('fullscreenBtn');
 
   // ===================== SPARC PENALTY UTILITIES =====================
@@ -251,6 +242,55 @@ window.onload = function() {
     return finalPenalty;
   }
 
+  // ===================== HARMONIC PENALTY (mean_dev × time) =====================
+  // score_harmonic = 1 / sqrt(mean_dev * time), min-max scaled to [0, 100]
+  // across all trials in the session, then inverted to a penalty:
+  //   penalty = 100 - score_harmonic_scaled   (0 = best trial so far, 100 = worst)
+
+  let sessionHarmonicValues = []; // raw (unscaled) harmonic scores, one per trial
+
+  function calculateMeanDeviation(path) {
+    if (path.length === 0) return 0;
+    let total = 0;
+    for (const pt of path) {
+      let minDist = Infinity;
+      for (const sp of outlineMiddle) {
+        const d = Math.hypot(pt.x - sp.x, pt.y - sp.y);
+        if (d < minDist) minDist = d;
+      }
+      total += minDist;
+    }
+    return total / path.length;
+  }
+
+  function calculateHarmonicPenalty() {
+    if (drawnPath.length < 5) return 0;
+
+    const time = drawnPath[drawnPath.length - 1].time ?? drawnPath.length;
+    const meanDev = calculateMeanDeviation(drawnPath);
+
+    const safeMeanDev = Math.max(meanDev, 1e-6);
+    const safeTime = Math.max(time, 1e-6);
+    const rawHarmonic = 1 / Math.sqrt(safeMeanDev * safeTime);
+
+    sessionHarmonicValues.push(rawHarmonic);
+
+    const lo = Math.min(...sessionHarmonicValues);
+    const hi = Math.max(...sessionHarmonicValues);
+
+    let scoreHarmonic;
+    if (hi - lo < 1e-12) {
+      scoreHarmonic = 50;
+    } else {
+      scoreHarmonic = 100 * (rawHarmonic - lo) / (hi - lo);
+    }
+
+    const penalty = 100 - scoreHarmonic;
+
+    console.log(`Harmonic Penalty -> meanDev: ${meanDev.toFixed(2)}, time: ${time.toFixed(2)}, score: ${scoreHarmonic.toFixed(2)}, penalty: ${penalty.toFixed(2)}`);
+    return penalty;
+  }
+
   // ===================== Global Fullscreen Management =====================
   function launchFullscreen() {
     const element = document.documentElement;
@@ -270,24 +310,31 @@ window.onload = function() {
   }
 
   // ── Sequence Selection ─────────────────────────────────────────────────────
-  if (sequenceBtnA) {
-    sequenceBtnA.addEventListener('change', function() {
-      if (this.checked) {
-        BLOCKS = BLOCKS_A;
-        currentSequence = 'A';
-        console.log('Switched to Sequence A');
-      }
-    });
+
+  function applySelection(value) {
+    if (value === 'A') {
+      BLOCKS = BLOCKS_A;
+      currentSequence = 'A';
+    } else if (value === 'B') {
+      BLOCKS = BLOCKS_B;
+      currentSequence = 'B';
+    } else {
+      // Single block: value is like "A1", "A2", "B1", "B2"...
+      const seqLetter = value[0];          // 'A' or 'B'
+      const blockIdx  = parseInt(value[1]) - 1;
+      const source    = seqLetter === 'A' ? BLOCKS_A : BLOCKS_B;
+      BLOCKS = [source[blockIdx]];
+      currentSequence = seqLetter;
+    }
+    console.log(`Selection: ${value} → ${BLOCKS.length} block(s)`);
   }
 
-  if (sequenceBtnB) {
-    sequenceBtnB.addEventListener('change', function() {
-      if (this.checked) {
-        BLOCKS = BLOCKS_B;
-        currentSequence = 'B';
-        console.log('Switched to Sequence B');
-      }
+  // Replace the two sequenceBtnA/B listeners with this single one:
+  if (sequenceSelect) {
+    sequenceSelect.addEventListener('change', function() {
+      applySelection(this.value);
     });
+    applySelection(sequenceSelect.value); // apply default on load
   }
 
   // ===================== Utilities =====================
@@ -888,8 +935,8 @@ window.onload = function() {
     console.log(BLOCKS[currentBlockIdx].maxTrials)
     trialMsg.textContent = '';
     trialProgress.textContent = USE_BLOCKS && BLOCKS.length
-      ? `Block ${currentBlockIdx + 1}/${BLOCKS.length} — Trial ${trialWithinBlock} of ${BLOCKS[currentBlockIdx].maxTrials}`
-      : `Trial ${trial} of ${totalTrials}`;
+    ? `Block ${currentBlockIdx + 1}/${BLOCKS.length} — Trial ${trialWithinBlock} of ${BLOCKS[currentBlockIdx].numTrials}`
+    : `Trial ${trial} of ${totalTrials}`;
     
     score = defaultScore;
     scoreDisplay.textContent = `Score: ${score}`;
@@ -930,19 +977,7 @@ window.onload = function() {
     if (USE_BLOCKS && BLOCKS.length > 0) {
       trialWithinBlock++;
       const block = BLOCKS[currentBlockIdx];
-
-      if (blockTrialScores.length >= 3) {
-        const params = fitSSM(blockTrialScores);
-        if (params) {
-          blockSSMHistory.push(params);
-          console.log(`Block ${currentBlockIdx + 1} trial ${trialWithinBlock}: A=${params.A.toFixed(4)} B=${params.B.toFixed(4)}`);
-        }
-      }
-
-      const hitMax    = trialWithinBlock >= block.maxTrials;
-      const pastMin   = trialWithinBlock >= block.minTrials;
-      const stable    = isSSMStable(blockSSMHistory, SSM_STABILITY_WINDOW, SSM_STABILITY_THRESHOLD);
-      const blockDone = hitMax || (pastMin && stable);
+      const blockDone = trialWithinBlock >= block.numTrials;
 
       if (blockDone) {
         if (currentBlockIdx < BLOCKS.length - 1) {
@@ -950,7 +985,6 @@ window.onload = function() {
             currentBlockIdx++;
             trialWithinBlock = 0;
             blockTrialScores = [];
-            blockSSMHistory  = [];
             applyBlockSettings(BLOCKS[currentBlockIdx]);
             if (trial < totalTrials) { trial++; nextTrial(); } else endExperiment();
           });
@@ -1010,9 +1044,9 @@ window.onload = function() {
     let filename = `SPAT_${user.name || 'anon'}_sequence_${currentSequence}_${new Date().toISOString().replace(/[-T:.Z]/g,'')}.xlsx`;
     if (document.pointerLockElement) {
       document.exitPointerLock();
-      setTimeout(()=>{ XLSX.writeFile(wb, filename); restartBtn.style.display = "block"; experimentEndOverlay.style.display = "block";}, 200);
+      setTimeout(()=>{ XLSX.writeFile(wb, filename); restartBtn.style.display = "block"; }, 200);
     } else {
-      XLSX.writeFile(wb, filename); restartBtn.style.display = "block"; experimentEndOverlay.style.display = "block";
+      XLSX.writeFile(wb, filename); restartBtn.style.display = "block";
     }
   }
 
@@ -1041,8 +1075,8 @@ window.onload = function() {
     pathLength = user.pathLength; nSegments = user.nSegments; deductError = user.deductError; deductTime = user.deductTime;
 
     currentBlockIdx=0; trialWithinBlock=0;
-    if(USE_BLOCKS && BLOCKS.length > 0){
-      totalTrials = BLOCKS.reduce((s, b) => s + b.maxTrials, 0);
+    if (USE_BLOCKS && BLOCKS.length > 0) {
+      totalTrials = BLOCKS.reduce((s, b) => s + b.numTrials, 0);
       applyBlockSettings(BLOCKS[0]);
     } else {
       totalTrials = user.trialNum; rotationAngle = user.rotation; lagMs = user.lag;
@@ -1054,7 +1088,7 @@ window.onload = function() {
     scoreDisplay.style.display = 'none';
     scoreDisplay.textContent = 'Score: ' + score;
     finalPlotDiv.innerHTML = ''; blockResultsDiv.innerHTML = ''; summaryBox.innerHTML = '';
-    restartBtn.style.display = "none"; experimentEndOverlay.style.display = "none"; resumeOverlay.style.display = "none";
+    restartBtn.style.display = "none"; resumeOverlay.style.display = "none";
 
     canvas = document.getElementById('spatCanvas');
     ctx = canvas.getContext('2d');
@@ -1086,7 +1120,7 @@ window.onload = function() {
     experimentPage.style.display = 'none';
     frontPage.style.display = 'block';
     summaryBox.innerHTML = ""; finalPlotDiv.innerHTML = ""; blockResultsDiv.innerHTML = "";
-    restartBtn.style.display = "none"; experimentEndOverlay.style.display = "none"; resumeOverlay.style.display = "none";
+    restartBtn.style.display = "none"; resumeOverlay.style.display = "none";
     document.body.style.cursor = 'default';
     currentBlockIdx=0; trialWithinBlock=0;
     mergedData = []; allShapeData = [];

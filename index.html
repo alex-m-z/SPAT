@@ -15,7 +15,7 @@
       <h3>Instructions</h3>
       <p>
         Thank you for participating to the SPAT experiment <br>
-        The goal of the experiment is to trace the read line as accurately as possible with your cursor, starting from the blue circle <br>
+        The goal of the experiment is to trace the read line as accurately as possible with your cursor <br>
         The scoring method is based on the time spent drawing and the accuracy of the drawing<br>
         After each trial, your score will appear, to give you an idea of how well you performed <br>
         The experiment is composed of 4 blocks, and you will have 1 minute to rest between each block <br>
@@ -25,7 +25,7 @@
       <h3>実験の手順</h3>
       <p>
         SPAT実験 ご参加いただき、ありがとうございます。<br>
-        この実験の目的は、カーソルを使って表示された線をできるだけ正確になぞることです、青い丸から <br>
+        この実験の目的は、カーソルを使って表示された線をできるだけ正確になぞることです <br>
         採点方法は、描画にかかった時間と描画の正確さに基づいています <br>
         各試行終了後、スコアが表示されますので、ご自身のパフォーマンスを確認してください <br>
         実験は4つのブロックで構成されており、各ブロックの間には1分間の休憩があります <br>
@@ -45,11 +45,23 @@
           <option value="wacom">Wacom tablet</option>
         </select>
       </label>
-      <label>Sequence:
-        <div class="sequence-group">
-          <label><input id="sequenceBtnA" type="radio" name="sequence" value="A" checked> Sequence A</label>
-          <label><input id="sequenceBtnB" type="radio" name="sequence" value="B"> Sequence B</label>
-        </div>
+      <label>Sequence / Block:
+        <select id="sequenceSelect">
+          <option value="A">Sequence A (all 4 blocks)</option>
+          <option value="B">Sequence B (all 4 blocks)</option>
+          <optgroup label="Sequence A — single block">
+            <option value="A1">A — Block 1 </option>
+            <option value="A2">A — Block 2 </option>
+            <option value="A3">A — Block 3 </option>
+            <option value="A4">A — Block 4 </option>
+          </optgroup>
+          <optgroup label="Sequence B — single block">
+            <option value="B1">B — Block 1 </option>
+            <option value="B2">B — Block 2 </option>
+            <option value="B3">B — Block 3 </option>
+            <option value="B4">B — Block 4 </option>
+          </optgroup>
+        </select>
       </label>
       <label>Rotation (degree):
         <input type="number" id="rotation" value="0">
@@ -113,16 +125,9 @@
     <div class="trial-end-content">
       <div class="trial-score-label">Trial Score  <br> トライアルスコア</div>
       <div class="trial-score-value" id="trialScoreValue">0.00</div>
-      <div class="trial-score-message">Proceeding to next trial... <br> 次の課題に進みます…</div>
+      <div class="trial-score-message">Proceeding to next trial... <br> 次の裁判に進みます…</div>
       <div id="graph"></div>
     </div>
-  </div>
-
-  <div id="experimentEndOverlay" class="trial-end-overlay">  
-    <div class="trial-end-content">
-      <div class="trial-score-message">Experiment completed! <br> 実験が完了しました！</div>
-    </div>
-    <button id="restartBtn">Restart</button>
   </div>
 
   <div id="countdownOverlay">
