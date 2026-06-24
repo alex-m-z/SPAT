@@ -1077,7 +1077,7 @@
       document.getElementById('experimentEndOverlay').style.display = "none";
       document.body.style.cursor = 'default';
       currentBlockIdx=0; trialWithinBlock=0;
-      mergedData = []; allShapeData = [];
+      mergedData = []; allShapeData = []; blockTrialScores = [];
     };
 
     document.addEventListener('pointerlockchange', function() {
