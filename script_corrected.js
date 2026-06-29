@@ -195,11 +195,13 @@
       }
       return res;
     }
+    const HARMONIC_NORM_LO = 0.061;   // global min of raw_h across all participants
+    const HARMONIC_NORM_HI = 0.25;   // global max of raw_h across all participants
 
     function calculateDTWRMSEPenalty() {
       if (drawnPath.length < 5) return defaultScore * 0.5;
 
-      // ── 1. Build ideal path along the middle outline from start → target ──
+      // ── 1. Mean deviation from shape outline ──────────────────────────────
       const n = outlineMiddle.length;
       const idealPathPoints = [];
       let curr = startIdx;
@@ -218,33 +220,26 @@
       const idealResampled  = resample1DArray(flatten(idealPathPoints), DTW_TARGET_LENGTH);
       const cursorResampled = resample1DArray(flatten(drawnPath),       DTW_TARGET_LENGTH);
 
-      const dtwMeanDist = computeDTWDistance(idealResampled, cursorResampled) / DTW_TARGET_LENGTH;
+      const meanDev = computeDTWDistance(idealResampled, cursorResampled) / DTW_TARGET_LENGTH;
 
-      // ── 3. Trial time ──
+      // ── 2. Trial time ──────────────────────────────────────────────────────
       const timeSec = Math.max(getTrialTime(), 0.001);
 
-      // ── 4. Normalise each component to [0, 1] using population anchors ──
-      const dtwN  = Math.min(1, Math.max(0,
-        (dtwMeanDist - DTW_NORM_LO) / (DTW_NORM_HI  - DTW_NORM_LO)));
-      const timeN = Math.min(1, Math.max(0,
-        (timeSec     - TIME_NORM_LO) / (TIME_NORM_HI - TIME_NORM_LO)));
+      // ── 3. Raw harmonic value: 1 / sqrt(mean_dev * time) ──────────────────
+      const rawH = 1.0 / Math.sqrt(Math.max(meanDev, 1e-6) * timeSec);
 
-      // ── 5. RMSE and invert ──
-      const rmse = Math.sqrt((dtwN ** 2 + timeN ** 2) / 2.0);
-      const inv  = 1.0 / (1.0 + rmse);
-
-      // ── 6. Scale to (1, 99) using pilot anchors ──
+      // ── 4. Normalise to [0, 100] using pilot anchors ──────────────────────
+      const span = HARMONIC_NORM_HI - HARMONIC_NORM_LO;
       const score = Math.min(99, Math.max(1,
-        (inv - INV_MIN) / (INV_MAX - INV_MIN) * 100
+        (rawH - HARMONIC_NORM_LO) / span * 100
       ));
 
       const penalty = defaultScore * (1 - score / 100);
 
       console.log(
-        `DTW-RMSE → dtw_mean: ${dtwMeanDist.toFixed(4)}, ` +
+        `Harmonic → mean_dev: ${meanDev.toFixed(4)}, ` +
         `time: ${timeSec.toFixed(2)}s, ` +
-        `dtw_n: ${dtwN.toFixed(3)}, time_n: ${timeN.toFixed(3)}, ` +
-        `rmse: ${rmse.toFixed(4)}, inv: ${inv.toFixed(4)}, ` +
+        `raw_h: ${rawH.toFixed(6)}, ` +
         `score: ${score.toFixed(1)}, penalty: ${penalty.toFixed(2)}`
       );
 
