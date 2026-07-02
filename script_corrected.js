@@ -742,7 +742,8 @@
       let activePenterId = null;
 
       canvas.addEventListener('pointerdown', (e) => {
-        if (e.pointerType !== 'pen') return;
+        if (e.pointerType === 'mouse') return;
+        e.preventDefault();
         if (!trialStarted) { startTrialTimer(); trialStarted = true; }
 
         activePenterId = e.pointerId;
@@ -765,8 +766,9 @@
         drawAmoeba();
       });
 
-      canvas.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'pen') return;
+    canvas.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
     if (!trialStarted || !tabletActive || !drawing) return;
     if (e.pointerId !== activePenterId) return;
 
@@ -806,7 +808,8 @@
   });
 
       canvas.addEventListener('pointerup', (e) => {
-        if (e.pointerType !== 'pen') return;
+        if (e.pointerType === 'mouse') return;
+        e.preventDefault();
         tabletActive = false;
         activePenterId = null;
         lastPenPos = null;

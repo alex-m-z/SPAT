@@ -188,6 +188,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       margin: 12px auto;
+      touch-action: none;
     }
     .trial-end-overlay {
       display: none;
