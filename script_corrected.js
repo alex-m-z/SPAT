@@ -195,7 +195,7 @@
       }
       return res;
     }
-    const HARMONIC_NORM_LO = 0.061;   // global min of raw_h across all participants
+    const HARMONIC_NORM_LO = 0.01;   // global min of raw_h across all participants
     const HARMONIC_NORM_HI = 0.25;   // global max of raw_h across all participants
 
     function calculateDTWRMSEPenalty() {
@@ -226,7 +226,7 @@
       const timeSec = Math.max(getTrialTime(), 0.001);
 
       // ── 3. Raw harmonic value: 1 / sqrt(mean_dev * time) ──────────────────
-      const rawH = 1.0 / Math.sqrt(Math.max(meanDev, 1e-6) * timeSec);
+      const rawH = 1.0 / Math.sqrt(Math.max(meanDev, 1e-6) ** 1.5 * timeSec);
 
       // ── 4. Normalise to [0, 100] using pilot anchors ──────────────────────
       const span = HARMONIC_NORM_HI - HARMONIC_NORM_LO;
