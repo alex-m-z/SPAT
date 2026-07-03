@@ -742,7 +742,7 @@
       let activePenterId = null;
 
       canvas.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse') return;
+        if (e.pointerType === 'touch') return;
         e.preventDefault();
         if (!trialStarted) { startTrialTimer(); trialStarted = true; }
 
@@ -767,7 +767,7 @@
       });
 
     canvas.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'mouse') return;
+    if (e.pointerType === 'touch') return;
     e.preventDefault();
     if (!trialStarted || !tabletActive || !drawing) return;
     if (e.pointerId !== activePenterId) return;
@@ -808,7 +808,7 @@
   });
 
       canvas.addEventListener('pointerup', (e) => {
-        if (e.pointerType === 'mouse') return;
+        if (e.pointerType === 'touch') return;
         e.preventDefault();
         tabletActive = false;
         activePenterId = null;
