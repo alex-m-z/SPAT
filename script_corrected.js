@@ -743,16 +743,16 @@
 
       canvas.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'touch') return;
+        if (tabletActive && e.pointerId !== activePenterId) return; // ignore duplicate/compat pointer mid-stroke
+
         e.preventDefault();
         if (!trialStarted) { startTrialTimer(); trialStarted = true; }
 
         activePenterId = e.pointerId;
-
         try {
           canvas.setPointerCapture(e.pointerId);
         } catch(err) {
           console.warn('setPointerCapture failed:', err);
-          // On continue quand même — le fallback lastPenPos prendra le relais
         }
 
         tabletActive = true;
@@ -810,6 +810,17 @@
       canvas.addEventListener('pointerup', (e) => {
         if (e.pointerType === 'touch') return;
         e.preventDefault();
+        tabletActive = false;
+        activePenterId = null;
+        lastPenPos = null;
+        try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+        endDrawingIfNeeded('tablet');
+        drawAmoeba();
+      });
+
+      canvas.addEventListener('pointercancel', (e) => {
+        if (e.pointerType === 'touch') return;
+        if (e.pointerId !== activePenterId) return;
         tabletActive = false;
         activePenterId = null;
         lastPenPos = null;
