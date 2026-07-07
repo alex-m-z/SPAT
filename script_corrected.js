@@ -737,14 +737,14 @@
       old.parentNode.replaceChild(newCanvas, old);
       canvas = newCanvas;
       ctx = canvas.getContext('2d');
+      canvas.style.touchAction = 'none';
 
       let lastPenPos = null;
       let activePenterId = null;
 
-      canvas.addEventListener('pointerdown', (e) => {
+      document.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'touch') return;
         if (tabletActive && e.pointerId !== activePenterId) return; // ignore duplicate/compat pointer mid-stroke
-
         e.preventDefault();
         if (!trialStarted) { startTrialTimer(); trialStarted = true; }
 
@@ -762,63 +762,48 @@
           penPos = { x: outlineMiddle[startIdx].x, y: outlineMiddle[startIdx].y };
           drawnPath = [{ x: penPos.x, y: penPos.y }];
         }
-        lastPenPos = { x: e.clientX, y: e.clientY };  // toujours initialisé ici
+        lastPenPos = { x: e.clientX, y: e.clientY };
         drawAmoeba();
       });
 
-    canvas.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'touch') return;
-    e.preventDefault();
-    if (!trialStarted || !tabletActive || !drawing) return;
-    if (e.pointerId !== activePenterId) return;
-
-    let now = performance.now();
-    const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-
-    for (const ce of events) {
-      if (!lastPenPos) {
-        lastPenPos = { x: ce.clientX, y: ce.clientY };
-        // PAS de return/continue ici — on initialise et on continue
-      }
-      const dx = ce.clientX - lastPenPos.x;
-      const dy = ce.clientY - lastPenPos.y;
-      lastPenPos = { x: ce.clientX, y: ce.clientY };
-
-      if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) continue; // ignorer micro-bruit
-
-      if (lagMs > 0) {
-        movementBuffer.push({ dx, dy, time: now });
-        while (movementBuffer.length && movementBuffer[0].time < now - lagMs - 2000)
-          movementBuffer.shift();
-        while (movementBuffer.length && movementBuffer[0].time <= now - lagMs) {
-          let mv = movementBuffer.shift();
-          processOneDelta(mv.dx, mv.dy, now, 'pen');
-        }
-      } else {
-        processOneDelta(dx, dy, now, 'pen');
-      }
-    }
-
-    if (reachedTarget) {
-      tabletActive = false;
-      activePenterId = null;
-      lastPenPos = null;
-      try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
-    }
-  });
-
-      canvas.addEventListener('pointerup', (e) => {
+      document.addEventListener('pointermove', (e) => {
         if (e.pointerType === 'touch') return;
-        e.preventDefault();
-        tabletActive = false;
-        activePenterId = null;
-        lastPenPos = null;
-        try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
-        endDrawingIfNeeded('tablet');
-        drawAmoeba();
+        if (!trialStarted || !tabletActive || !drawing) return;
+        if (e.pointerId !== activePenterId) return;
+
+        let now = performance.now();
+        const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+
+        for (const ce of events) {
+          if (!lastPenPos) lastPenPos = { x: ce.clientX, y: ce.clientY };
+          const dx = ce.clientX - lastPenPos.x;
+          const dy = ce.clientY - lastPenPos.y;
+          lastPenPos = { x: ce.clientX, y: ce.clientY };
+
+          if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) continue;
+
+          if (lagMs > 0) {
+            movementBuffer.push({ dx, dy, time: now });
+            while (movementBuffer.length && movementBuffer[0].time < now - lagMs - 2000)
+              movementBuffer.shift();
+            while (movementBuffer.length && movementBuffer[0].time <= now - lagMs) {
+              let mv = movementBuffer.shift();
+              processOneDelta(mv.dx, mv.dy, now, 'pen');
+            }
+          } else {
+            processOneDelta(dx, dy, now, 'pen');
+          }
+        }
+
+        if (reachedTarget) {
+          tabletActive = false;
+          activePenterId = null;
+          lastPenPos = null;
+          try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
       });
 
-      canvas.addEventListener('pointercancel', (e) => {
+      document.addEventListener('pointerup', (e) => {
         if (e.pointerType === 'touch') return;
         if (e.pointerId !== activePenterId) return;
         tabletActive = false;
@@ -829,9 +814,16 @@
         drawAmoeba();
       });
 
-      // *** KEY FIX: don't kill tabletActive on pointerleave ***
-      // Pointer capture means pointermove still fires even outside the canvas,
-      // so pointerleave firing mid-stroke was incorrectly stopping drawing.
+      document.addEventListener('pointercancel', (e) => {
+        if (e.pointerType === 'touch') return;
+        if (e.pointerId !== activePenterId) return;
+        tabletActive = false;
+        activePenterId = null;
+        lastPenPos = null;
+        try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+        endDrawingIfNeeded('tablet');
+        drawAmoeba();
+      });
     }
 
     function gamepadLoop(){
